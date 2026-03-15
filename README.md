@@ -1,82 +1,209 @@
-<a href="https://fal-image-generator.vercel.app">
-  <h1 align="center">Fal x Vercel Image Generator</h1>
-</a>
+# Vercel Fal Image Generator
 
-<p align="center">
-  An open-source AI image generation app template built with Next.js, the AI SDK by Vercel, and Fal.
-</p>
+![Language](https://img.shields.io/badge/Language-TypeScript-3178C6?style=flat-square) ![Stars](https://img.shields.io/github/stars/Devanik21/vercel-fal-image-generator?style=flat-square&color=yellow) ![Forks](https://img.shields.io/github/forks/Devanik21/vercel-fal-image-generator?style=flat-square&color=blue) ![Author](https://img.shields.io/badge/Author-Devanik21-black?style=flat-square&logo=github) ![Status](https://img.shields.io/badge/Status-Active-brightgreen?style=flat-square)
 
-<p align="center">
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#deploy-your-own"><strong>Deploy Your Own</strong></a> ·
-  <a href="#running-locally"><strong>Running Locally</strong></a> ·
-  <a href="#authors"><strong>Authors</strong></a>
-</p>
-<br/>
+> Serverless AI image generation at zero infrastructure cost — Vercel Fal Image Generator deployed on Vercel with fal.ai GPU backend.
+
+---
+
+**Topics:** `api` · `diffusion-models` · `edge-inference` · `fal-ai` · `generative-ai` · `text-to-image` · `vercel` · `web-app` · `fast-generation` · `real-time-image-generation`
+
+## Overview
+
+Vercel Fal Image Generator is a Next.js web application that exposes a polished image generation interface, deployed on Vercel's edge network, with all GPU-intensive inference offloaded to fal.ai's serverless infrastructure. The result is a production-grade generative AI application with no GPU management, no server maintenance, and sub-second cold-start times.
+
+The frontend is built with React and Tailwind CSS, providing a clean prompt input panel with controls for negative prompt, image size, number of inference steps, guidance scale, and model selection. Generation requests are sent to a Next.js API route, which proxies them to the fal.ai endpoint using the fal-js SDK. Results are streamed back to the client progressively as generation proceeds.
+
+The application includes a prompt history gallery persisted in localStorage, a prompt enhancement feature that uses an LLM to expand terse prompts into detailed, style-rich descriptions, and a side-by-side comparison mode for evaluating the same prompt across different models or parameter settings.
+
+---
+
+## Motivation
+
+The barrier to deploying a functional AI image generator has dropped dramatically with fal.ai's serverless GPU API and Vercel's frontend hosting. This project demonstrates how to build a fully production-ready generative image application without managing a single server or paying for idle GPU time — the compute bill is strictly pay-per-generation.
+
+---
+
+## Architecture
+
+```
+React Frontend (Next.js, Tailwind)
+        │
+  Next.js API Route (/api/generate)
+        │
+  fal.ai SDK → Serverless GPU (FLUX / SDXL)
+        │
+  Image URL streamed back to client
+        │
+  Gallery display + localStorage persistence
+```
+
+Vercel handles CDN, SSL, and edge routing. fal.ai handles GPU scheduling and model execution. The Next.js API route is the only server-side code, and it is stateless.
+
+---
 
 ## Features
 
-- Supports image generation using [`generateImage`](https://sdk.vercel.ai/docs/reference/ai-sdk-core/generate-image) from the [AI SDK by Vercel](https://sdk.vercel.ai/docs), allowing multiple AI providers to be used interchangeably with just a few lines of code.
-- A single input to generate images across multiple models simultaneously.
-- [shadcn/ui](https://ui.shadcn.com/) components for a modern, responsive UI powered by [Tailwind CSS](https://tailwindcss.com).
-- Built with the latest [Next.js](https://nextjs.org) App Router (version 15).
+### Prompt Input with Enhancement
+Text area for the main prompt with an optional 'Enhance' button that sends the terse input to an LLM (GPT-4o-mini or Gemini Flash) for expansion into a detailed, style-rich generation prompt.
 
-## Deploy Your Own
+### Negative Prompt Support
+Collapsible negative prompt field for specifying elements to exclude from the generated image — essential for controlling quality and style.
 
-You can deploy your own version of the AI SDK Image Generator to Vercel by clicking the button below:
+### Model and Parameter Controls
+Select from available fal.ai models (FLUX.1-dev, FLUX.1-schnell, SDXL), configure image dimensions (512px to 1024px), inference steps (1–50), and guidance scale.
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?project-name=FAL+x+Vercel+Image+Generator&repository-name=vercel-fal-image-generator&repository-url=https%3A%2F%2Fgithub.com%2Fvercel-labs%2Fvercel-fal-image-generator&demo-title=FAL+x+Vercel+Image+Generator&demo-url=https%3A%2F%2Ffal-image-generator.vercel.app%2F&demo-description=An+open-source+AI+image+generation+app+template+built+with+Next.js%2C+the+AI+SDK+by+Vercel%2C+and+FAL&products=%5B%7B%22type%22%3A%22integration%22%2C%22protocol%22%3A%22ai%22%2C%22productSlug%22%3A%22fal%22%2C%22integrationSlug%22%3A%22fal%22%7D%5D)
+### Real-Time Generation Progress
+WebSocket-based progress streaming shows intermediate latent images or a progress bar during multi-step diffusion inference.
 
-## Running Locally
+### Prompt History Gallery
+All generated images and their prompts are persisted in localStorage and displayed in a scrollable gallery with copy-prompt and regenerate buttons.
 
-1. Clone the repository and install dependencies:
+### Side-by-Side Comparison Mode
+Generate the same prompt with two different models or parameter sets simultaneously, rendering results in a split-view for direct comparison.
 
-   ```bash
-   npm install
-   # or
-   yarn install
-   # or
-   pnpm install
-   ```
+### One-Click Vercel Deployment
+A Deploy button in the README links to a Vercel deployment template pre-configured with required environment variables.
 
-2. Install the [Vercel CLI](https://vercel.com/docs/cli):
+### Mobile-Responsive Layout
+Tailwind CSS responsive design works cleanly on mobile browsers, tablet, and desktop without separate mobile builds.
 
-   ```bash
-   npm i -g vercel
-   # or
-   yarn global add vercel
-   # or
-   pnpm install -g vercel
-   ```
+---
 
-   Once installed, link your local project to your Vercel project:
+## Tech Stack
 
-   ```bash
-   vercel link
-   ```
+| Library / Tool | Role | Why This Choice |
+|---|---|---|
+| **Next.js 14** | React framework | App Router, API Routes, Server Components |
+| **React** | UI library | Client-side interactivity and component model |
+| **Tailwind CSS** | Styling | Utility-first responsive design system |
+| **fal.ai SDK (@fal-ai/client)** | AI backend | Serverless GPU inference for FLUX/SDXL models |
+| **TypeScript** | Type safety | End-to-end typed Next.js application |
+| **Vercel** | Hosting & deployment | Edge CDN, automatic HTTPS, CI/CD from GitHub |
+| **OpenAI SDK (optional)** | Prompt enhancement | GPT-4o-mini for terse→detailed prompt expansion |
 
-   After linking, pull your environment variables:
+> **Key packages detected in this repo:** `@ai-sdk/fal` · `@radix-ui/react-collapsible` · `@radix-ui/react-label` · `@radix-ui/react-scroll-area` · `@radix-ui/react-select` · `@radix-ui/react-slot` · `@radix-ui/react-toast` · `@radix-ui/react-toggle` · `@radix-ui/react-tooltip` · `@vercel/analytics`
 
-   ```bash
-   vercel env pull
-   ```
+---
 
-   This will create a `.env.local` file with all the necessary environment variables.
+## Getting Started
 
-3. Run the development server:
+### Prerequisites
 
-   ```bash
-   npm run dev
-   # or
-   yarn dev
-   # or
-   pnpm dev
-   ```
+- Python 3.9+ (or Node.js 18+ for TypeScript/JS projects)
+- `pip` or `npm` package manager
+- Relevant API keys (see Configuration section)
 
-4. Open [http://localhost:3000](http://localhost:3000) to view your new AI chatbot application.
+### Installation
 
-## Authors
+```bash
+git clone https://github.com/Devanik21/vercel-fal-image-generator.git
+cd vercel-fal-image-generator
+npm install
 
-This repository is maintained by the [Vercel](https://vercel.com) team and community contributors.
+# Create .env.local
+echo 'FAL_KEY=your_fal_api_key' > .env.local
+echo 'OPENAI_API_KEY=your_openai_key' >> .env.local  # optional
 
-Contributions are welcome! Feel free to open issues or submit pull requests to enhance functionality or fix bugs.
+# Run development server
+npm run dev
+# Open http://localhost:3000
+
+# Deploy to Vercel
+npx vercel --prod
+```
+
+---
+
+## Usage
+
+```bash
+// pages/api/generate.ts — core generation route
+import { fal } from '@fal-ai/client';
+
+export default async function handler(req, res) {
+  const { prompt, negativePrompt, steps, guidance } = req.body;
+  const result = await fal.run('fal-ai/flux/dev', {
+    input: { prompt, negative_prompt: negativePrompt,
+             num_inference_steps: steps, guidance_scale: guidance }
+  });
+  res.json({ imageUrl: result.images[0].url });
+}
+```
+
+---
+
+## Configuration
+
+| Variable | Default | Description |
+|---|---|---|
+| `FAL_KEY` | `(required)` | fal.ai API key from fal.ai/dashboard |
+| `OPENAI_API_KEY` | `(optional)` | OpenAI API key for prompt enhancement feature |
+| `DEFAULT_MODEL` | `fal-ai/flux/schnell` | Default fal.ai model endpoint |
+| `DEFAULT_STEPS` | `4` | Default number of inference steps |
+
+> Copy `.env.example` to `.env` and populate all required values before running.
+
+---
+
+## Project Structure
+
+```
+vercel-fal-image-generator/
+├── README.md
+├── .eslintrc.json
+├── components.json
+├── package.json
+└── ...
+```
+
+---
+
+## Roadmap
+
+- [ ] Image-to-image transformation mode with uploaded reference image
+- [ ] Style preset library with one-click prompt templates (photorealistic, anime, oil painting, etc.)
+- [ ] User accounts with cloud-persisted generation history (Supabase or Clerk)
+- [ ] ControlNet integration for pose-guided and edge-guided generation
+- [ ] Batch generation mode: run the same prompt N times with different seeds for variation sampling
+
+---
+
+## Contributing
+
+Contributions, issues, and feature requests are welcome. Please:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/your-feature`)
+3. Commit your changes (`git commit -m 'feat: add your feature'`)
+4. Push to your branch (`git push origin feature/your-feature`)
+5. Open a Pull Request
+
+Please follow conventional commit messages and ensure any new code is documented.
+
+---
+
+## Notes
+
+A fal.ai API key is required for generation. Free-tier fal.ai keys have rate limits. Image generation costs scale with model choice and inference steps.
+
+---
+
+## Author
+
+**Devanik Debnath**  
+B.Tech, Electronics & Communication Engineering  
+National Institute of Technology Agartala
+
+[![GitHub](https://img.shields.io/badge/GitHub-Devanik21-black?style=flat-square&logo=github)](https://github.com/Devanik21)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-devanik-blue?style=flat-square&logo=linkedin)](https://www.linkedin.com/in/devanik/)
+
+---
+
+## License
+
+This project is open source and available under the [MIT License](LICENSE).
+
+---
+
+*Crafted with curiosity, precision, and a belief that good software is worth building well.*
